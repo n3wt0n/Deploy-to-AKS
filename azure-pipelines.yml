@@ -47,7 +47,13 @@ stages:
       pool:
         vmImage: ubuntu-latest  
       steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'manifests'
+          targetPath: '$(Pipeline.Workspace)'
       - task: KubernetesManifest@0
+        displayName: Create Secret for ACR
         inputs:
           action: 'createSecret'
           kubernetesServiceConnection: 'K8S_Examples_cluster-default'
@@ -56,6 +62,7 @@ stages:
           secretName: '$(imagePullSecretName)'
           dockerRegistryEndpoint: 'K8SExamplesACR'
       - task: KubernetesManifest@0
+        displayName: Deploy to AKS
         inputs:
           action: 'deploy'
           kubernetesServiceConnection: 'K8S_Examples_cluster-default'
