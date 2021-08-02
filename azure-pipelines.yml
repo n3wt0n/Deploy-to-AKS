@@ -46,7 +46,7 @@ stages:
     displayName: Deploy to K8S
     pool:
       vmImage: ubuntu-latest  
-    environment: 'k8sDev'
+    environment: 'k8sDev.default'
     strategy:
       runOnce:
         deploy:
