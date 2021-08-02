@@ -46,21 +46,21 @@ stages:
       displayName: Deploy to K8S
       pool:
         vmImage: ubuntu-latest  
-        steps:
-        - task: KubernetesManifest@0
-          inputs:
-            action: 'createSecret'
-            kubernetesServiceConnection: 'K8S_Examples_cluster-default'
-            namespace: 'default'
-            secretType: 'dockerRegistry'
-            secretName: '$(imagePullSecretName)'
-            dockerRegistryEndpoint: 'K8SExamplesACR'
-        - task: KubernetesManifest@0
-          inputs:
-            action: 'deploy'
-            kubernetesServiceConnection: 'K8S_Examples_cluster-default'
-            namespace: 'default'
-            manifests: |
-              $(Pipeline.Workspace)/manifests/deployment.yml
-              $(Pipeline.Workspace)/manifests/service.yml
-            imagePullSecrets: '$(imagePullSecretName)'
+      steps:
+      - task: KubernetesManifest@0
+        inputs:
+          action: 'createSecret'
+          kubernetesServiceConnection: 'K8S_Examples_cluster-default'
+          namespace: 'default'
+          secretType: 'dockerRegistry'
+          secretName: '$(imagePullSecretName)'
+          dockerRegistryEndpoint: 'K8SExamplesACR'
+      - task: KubernetesManifest@0
+        inputs:
+          action: 'deploy'
+          kubernetesServiceConnection: 'K8S_Examples_cluster-default'
+          namespace: 'default'
+          manifests: |
+            $(Pipeline.Workspace)/manifests/deployment.yml
+            $(Pipeline.Workspace)/manifests/service.yml
+          imagePullSecrets: '$(imagePullSecretName)'
