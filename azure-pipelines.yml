@@ -11,6 +11,8 @@ resources:
 variables:
   image: sampleapp
   tag: '$(Build.BuildId)'
+  registry: k8sexamplesacr.azurecr.io
+  replicas: 3
 
 stages:
 - stage: Build
@@ -65,10 +67,10 @@ stages:
               secretName: '$(imagePullSecretName)'
               dockerRegistryEndpoint: 'K8SExamplesACR'
           - task: KubernetesManifest@0
-            displayName: Deploy to AKS
             inputs:
-              action: 'deploy'                            
+              action: 'deploy'
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
+              containers: '$(registry)/$(image):$(tag)'
               imagePullSecrets: '$(imagePullSecretName)'
