@@ -42,33 +42,33 @@ stages:
   variables:
     imagePullSecretName: k8sexamplesacrauth
   jobs:
-    - job: Deploy
-      displayName: Deploy to K8S
-      pool:
-        vmImage: ubuntu-latest  
-      steps:
-      - task: DownloadPipelineArtifact@2
-        displayName: Download Artifacts
-        inputs:
-          buildType: 'current'
-          artifactName: 'manifests'
-          targetPath: '$(Pipeline.Workspace)/manifests'
-      - task: KubernetesManifest@0
-        displayName: Create Secret for ACR
-        inputs:
-          action: 'createSecret'
-          kubernetesServiceConnection: 'K8S_Examples_cluster-default'
-          namespace: 'default'
-          secretType: 'dockerRegistry'
-          secretName: '$(imagePullSecretName)'
-          dockerRegistryEndpoint: 'K8SExamplesACR'
-      - task: KubernetesManifest@0
-        displayName: Deploy to AKS
-        inputs:
-          action: 'deploy'
-          kubernetesServiceConnection: 'K8S_Examples_cluster-default'
-          namespace: 'default'
-          manifests: |
-            $(Pipeline.Workspace)/manifests/deployment.yml
-            $(Pipeline.Workspace)/manifests/service.yml
-          imagePullSecrets: '$(imagePullSecretName)'
+  - deployment: Deploy
+    displayName: Deploy to K8S
+    pool:
+      vmImage: ubuntu-latest  
+    environment: 'k8sDev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Artifacts
+            inputs:
+              buildType: 'current'
+              artifactName: 'manifests'
+              targetPath: '$(Pipeline.Workspace)/manifests'
+          - task: KubernetesManifest@0
+            displayName: Create Secret for ACR
+            inputs:
+              action: 'createSecret'                           
+              secretType: 'dockerRegistry'
+              secretName: '$(imagePullSecretName)'
+              dockerRegistryEndpoint: 'K8SExamplesACR'
+          - task: KubernetesManifest@0
+            displayName: Deploy to AKS
+            inputs:
+              action: 'deploy'                            
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: '$(imagePullSecretName)'
