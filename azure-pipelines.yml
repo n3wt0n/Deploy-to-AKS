@@ -48,10 +48,11 @@ stages:
         vmImage: ubuntu-latest  
       steps:
       - task: DownloadPipelineArtifact@2
+        displayName: Download Artifacts
         inputs:
           buildType: 'current'
           artifactName: 'manifests'
-          targetPath: '$(Pipeline.Workspace)'
+          targetPath: '$(Pipeline.Workspace)/manifests'
       - task: KubernetesManifest@0
         displayName: Create Secret for ACR
         inputs:
