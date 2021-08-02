@@ -40,7 +40,7 @@ stages:
   displayName: Deploy to Dev
   dependsOn: Build
   variables:
-    imagePullSecretName: K8SExamplesACrAuth
+    imagePullSecretName: k8sexamplesacrauth
   jobs:
     - job: Deploy
       displayName: Deploy to K8S
