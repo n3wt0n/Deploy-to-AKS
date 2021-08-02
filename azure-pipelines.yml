@@ -66,6 +66,20 @@ stages:
               secretType: 'dockerRegistry'
               secretName: '$(imagePullSecretName)'
               dockerRegistryEndpoint: 'K8SExamplesACR'
+          - task: replacetokens@3
+            displayName: Replace variables in Manifests
+            inputs:
+              rootDirectory: '$(Pipeline.Workspace)/manifests'
+              targetFiles: 'deployment.yaml'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '%'
+              tokenSuffix: '%'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
           - task: KubernetesManifest@0
             inputs:
               action: 'deploy'
