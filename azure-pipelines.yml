@@ -26,7 +26,6 @@ stages:
         Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
         tags: |
           $(tag)
-          latest
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Pipeline.Workspace)/s/kubernetes'
@@ -38,6 +37,8 @@ stages:
   dependsOn: Build
   variables:
     acrsecret: k8sexamplesacrauth
+    acrdevurl: 'k8sexamplesacr.azurecr.io'
+    replicaNo: 3
   jobs:
   - deployment: Deploy
     displayName: Deploy to AKS
@@ -60,6 +61,20 @@ stages:
               secretType: 'dockerRegistry'
               secretName: '$(acrsecret)'
               dockerRegistryEndpoint: 'K8SExamplesACR'
+          - task: replacetokens@3
+            displayName: Replace Tokens
+            inputs:
+              rootDirectory: '$(Pipeline.Workspace)/manifests/'
+              targetFiles: 'deployment.yml'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#'
+              tokenSuffix: '#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
           - task: KubernetesManifest@0
             inputs:
               action: 'deploy'
@@ -67,3 +82,4 @@ stages:
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
+              containers: '$(acrdevurl)/$(imageRepo):$(tag)'
