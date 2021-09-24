@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: sampleapp 
-          image: k8sexamplesacr.azurecr.io/sampleapp
+          image: awvseacr.azurecr.io/sampleapp
           ports:
           - containerPort: 80
