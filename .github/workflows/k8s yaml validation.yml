@@ -19,4 +19,4 @@ jobs:
         run: curl https://get.datree.io | /bin/bash
 
       - name: Scan with DaTree
-        run: datree test /kubernetes/*.yml
+        run: datree test ./kubernetes/*.yml
