@@ -20,3 +20,5 @@ jobs:
 
       - name: Scan with DaTree
         run: datree test ./kubernetes/*.yml
+        env:
+          DATREE_TOKEN: ${{ secrets.DATREE_TOKEN }} 
