@@ -50,6 +50,7 @@ jobs:
         files: '["kubernetes/deployment.yml"]'
       env:
         REPLICAS: 1
+        SOURCEVERSION: ${{ github.sha }}
     
     - name: Set AKS Context
       uses: azure/aks-set-context@v1

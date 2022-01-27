@@ -2,8 +2,11 @@ apiVersion : apps/v1
 kind: Deployment
 metadata:
   name: komodor-demo 
+  annotations:
+    app.komodor.com/app: https://github.com/n3wt0n/Deploy-to-AKS
+    app.komodor.com/app.ref: #{SOURCEVERSION}#
 spec:
-  replicas: #REPLICAS#
+  replicas: #{REPLICAS}#
   selector:
     matchLabels:
       app: komodor-demo
