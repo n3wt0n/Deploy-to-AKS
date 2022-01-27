@@ -49,7 +49,7 @@ jobs:
       with:
         files: '["kubernetes/deployment.yml"]'
       env:
-        REPLICAS: 10
+        REPLICAS: 3
         SOURCEVERSION: ${{ github.sha }}
     
     - name: Set AKS Context
