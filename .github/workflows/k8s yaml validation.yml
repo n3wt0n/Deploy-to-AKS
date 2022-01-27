@@ -1,4 +1,4 @@
-name: AKS - Build and deploy
+name: K8S YAML Validation
 
 on:
   workflow_dispatch:
