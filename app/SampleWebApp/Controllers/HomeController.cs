@@ -20,6 +20,9 @@ namespace SampleWebApp.Controllers
 
         public IActionResult Index()
         {
+            var primo = 10;
+            var secondo = 0;
+            var result = primo / secondo;
             return View();
         }
 
