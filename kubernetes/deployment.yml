@@ -5,6 +5,7 @@ metadata:
   annotations:
     app.komodor.com/app: https://github.com/n3wt0n/Deploy-to-AKS
     app.komodor.com/app.ref: #{SOURCEVERSION}#
+    app.komodor.com/deploy.link.davide: "https://ciao.gino.it"
 spec:
   replicas: #{REPLICAS}#
   selector:
