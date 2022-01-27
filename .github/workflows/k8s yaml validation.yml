@@ -44,7 +44,7 @@ jobs:
     - name: Replace tokens
       uses: cschleiden/replace-tokens@v1.1
       with:
-        files: '["kubernetes/deployment.yaml"]'
+        files: '["kubernetes/deployment.yml"]'
       env:
         REPLICAS: 1
     
@@ -60,8 +60,8 @@ jobs:
       with:
         namespace: default        
         manifests: |
-          kubernetes/deployment.yaml
-          kubernetes/service.yaml
+          kubernetes/deployment.yml
+          kubernetes/service.yml
         # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
         images: ${{ format('{0}/{1}:{2}', env.CONTAINER_REGISTRY, env.IMAGE_NAME, github.run_id) }}
         # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
