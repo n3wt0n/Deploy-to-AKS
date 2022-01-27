@@ -2,6 +2,9 @@ name: K8S YAML Validation
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+    - komodor
  
 env:
   IMAGE_NAME: komodor-demo
