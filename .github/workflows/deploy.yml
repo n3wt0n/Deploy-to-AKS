@@ -1,0 +1,91 @@
+name: AKS - Build and deploy
+
+on:
+  workflow_dispatch:
+ 
+env:
+  IMAGE_NAME: komodor-demo
+  CONTAINER_REGISTRY: acrdbtekdev.azurecr.io  
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+        
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build Container image
+      run: docker build . --file Dockerfile --tag $CONTAINER_REGISTRY/$IMAGE_NAME:${{ github.run_id }}
+    
+    - name: Azure Container Registry Login
+      uses: Azure/docker-login@v1
+      with:
+        username: ${{ secrets.ACRDBTEKDEV_APPID }}
+        password: ${{ secrets.ACRDBTEKDEV_PASSWORD }}
+        login-server: https://${{ env.CONTAINER_REGISTRY }}
+     
+    - name: Push Container Image
+      run: docker push $CONTAINER_REGISTRY/$IMAGE_NAME:${{ github.run_id }}
+    
+      
+  deploy-to-dev:
+    runs-on: ubuntu-latest    
+    needs: [build-image]
+    defaults:
+      run:
+        working-directory: kubernetes
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Replace tokens
+      uses: cschleiden/replace-tokens@v1.1
+      with:
+        files: '["kubernetes/deployment.yaml"]'
+      env:
+        REPLICAS: 1
+    
+    - name: Set AKS Context
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.DBTEKDEV_SP }}' 
+        resource-group: 'AKSDev'
+        cluster-name: 'AKS-DevCluster'
+    
+    - name: Deploy to Kubernetes cluster
+      uses: Azure/k8s-deploy@v1.5
+      with:
+        namespace: default        
+        manifests: |
+          kubernetes/deployment.yaml
+          kubernetes/service.yaml
+        # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
+        images: ${{ format('{0}/{1}:{2}', env.CONTAINER_REGISTRY, env.IMAGE_NAME, github.run_id) }}
+        # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
+        #imagepullsecrets: # optional
+        # Version of kubectl. Installs a specific version of kubectl binary
+        #kubectl-version: # optional
+        # Deployment strategy to be used. Allowed values are none, canary and blue-green
+        #strategy: # optional, default is none
+        # Route based on service, ingress or SMI for blue-green strategy
+        #route-method: # optional, default is service
+        # Indicates the buffer time in minutes before the switch is made to the green version (max is 300 min ie. 5hrs)
+        #version-switch-buffer: # optional, default is 0
+        # Traffic split method to be used. Allowed values are pod, smi
+        #traffic-split-method: # optional, default is pod
+        # Baseline and canary replicas count; valid value i.e between 0 to 100.
+        #baseline-and-canary-replicas: # optional, default is 0
+        # Percentage of traffic redirect to canary deployment
+        #percentage: # optional, default is 0
+        # Arguments
+        #args: # optional
+        # deploy/promote/reject
+        #action: # default is deploy
+        # Deploy when a previous deployment already exists. If true then --force argument is added to the apply command
+        #force: # optional
+
+
+    

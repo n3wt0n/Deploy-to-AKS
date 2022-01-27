@@ -1,19 +1,19 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: sampleapp 
+  name: komodor-demo 
 spec:
-  replicas: #replicaNo#
+  replicas: #REPLICAS#
   selector:
     matchLabels:
-      app: sampleapp
+      app: komodor-demo
   template:
     metadata:
       labels:
-        app: sampleapp 
+        app: komodor-demo 
     spec:
       containers:
-        - name: sampleapp 
-          image: k8sexamplesacr.azurecr.io/sampleapp
+        - name: komodor-demo 
+          image: acrdbtekdev.azurecr.io/komodor-demo
           ports:
           - containerPort: 80
