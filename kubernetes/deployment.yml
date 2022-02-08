@@ -21,3 +21,10 @@ spec:
           image: acrdbtekdev.azurecr.io/komodor-demo
           ports:
           - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: 5000m
+            limits:
+              memory: "512Mi"
+              cpu: 5000m
