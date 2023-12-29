@@ -9,7 +9,7 @@ resources:
 - repo: self
 
 variables:
-  imageRepo: docker-sb
+  imageRepo: cindysampleapp
   tag: '$(Build.BuildId)'
 
 stages:
@@ -24,7 +24,7 @@ stages:
     - task: Docker@2
       displayName: Build an image and push to jfrog
       inputs:
-        containerRegistry: 'jfrog-cr'
+        containerRegistry: 'npdevcbsacr'
         repository: '$(imageRepo)'
         command: 'buildAndPush'
         Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
@@ -40,6 +40,8 @@ stages:
 - stage: Deploy
   displayName: Deploy to DEV
   dependsOn: Build
+  variables:
+    acrsecret: k8sexampleacrauth
   jobs:
     - job: Deploy
       displayName: Deploy to AKS
@@ -51,6 +53,15 @@ stages:
           buildType: 'current'
           artifactName: 'manifests'
           targetPath: '$(Pipeline.Workspace)/manifests'
+      - task: KubernetesManifest@1
+        inputs:
+          action: 'createSecret'
+          connectionType: 'kubernetesServiceConnection'
+          kubernetesServiceConnection: 'aks-dev'
+          namespace: 'default'
+          secretType: 'dockerRegistry'
+          secretName: '$(acrsecret)'
+          dockerRegistryEndpoint: 'npdevcbsacr'
       - task: KubernetesManifest@1
         inputs:
           action: 'deploy'
